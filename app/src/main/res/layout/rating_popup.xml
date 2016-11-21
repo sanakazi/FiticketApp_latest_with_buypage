@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:padding="5dp"
+    android:background="#DCDCDC">
+
+    <TextView
+        android:textColor="@color/Black"
+        android:textSize="15sp"
+        android:padding="5dp"
+        android:id= "@+id/txt1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/txt1"
+        android:gravity="center"
+        />
+
+    <TextView
+        android:textColor="@color/Black"
+        android:textSize="15sp"
+        android:padding="5dp"
+        android:id= "@+id/txt2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/txt2"
+        android:layout_below="@+id/txt1"
+        android:gravity="center"/>
+
+    <TextView
+        android:textColor="@color/Black"
+        android:padding="5dp"
+        android:id="@+id/txt3"
+        android:layout_below="@id/txt2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="gym name"
+        android:textStyle="bold"
+        android:textSize="15sp"/>
+
+    <TextView
+        android:textColor="@color/Black"
+        android:padding="5dp"
+        android:id="@+id/txt4"
+        android:layout_below="@id/txt3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="activity name"
+        android:textStyle="bold"
+        android:textSize="15sp"/>
+
+
+
+      <TextView
+          android:padding="5dp"
+          android:layout_centerHorizontal="true"
+          android:layout_below="@+id/txt4"
+          android:id="@+id/txt5"
+          android:textColor="@color/Black"
+          android:textSize="15sp"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/txt3"
+          android:gravity="center"/>
+
+      <android.support.v7.widget.SwitchCompat
+          android:paddingTop="5dp"
+          android:paddingLeft="10dp"
+          android:paddingRight="10dp"
+          android:layout_toRightOf="@+id/txt5"
+          android:layout_below="@+id/txt4"
+          android:gravity="center"
+          android:id="@+id/switchButton"
+          android:layout_width="wrap_content"
+          android:checked="true"
+          android:layout_height="wrap_content"
+          android:textAppearance="?android:attr/textAppearanceMedium"
+
+          />
+
+    <RelativeLayout
+        android:id="@+id/rl2"
+        android:layout_below="@+id/txt5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:padding="10dp"
+        >
+
+        <LinearLayout
+            android:id="@+id/l1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1">
+
+            <CheckBox
+                android:id="@+id/check1"
+                android:layout_weight="0.5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:focusable="false"
+                android:text="Issue with gym"
+                android:textColor="@color/Black"
+                android:textSize="15sp"
+                android:button="@drawable/radiobutton"/>
+            <CheckBox
+                android:id="@+id/check2"
+                android:layout_weight="0.5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:focusable="false"
+                android:text="Couldn't reach on time"
+                android:textColor="@color/Black"
+                android:textSize="15sp"
+                android:button="@drawable/radiobutton"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/l2"
+            android:layout_below="@+id/l1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1">
+
+            <CheckBox
+                android:id="@+id/check3"
+                android:layout_weight="0.5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:focusable="false"
+                android:text="Couldn't find the gym"
+                android:textColor="@color/Black"
+                android:textSize="15sp"
+                android:button="@drawable/radiobutton"/>
+
+            <CheckBox
+                android:id="@+id/check4"
+                android:layout_weight="0.5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:focusable="false"
+                android:text="Other"
+                android:textColor="@color/Black"
+                android:textSize="15sp"
+                android:button="@drawable/radiobutton"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rl2"
+        >
+
+    <RatingBar
+
+        android:id="@+id/ratings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+
+        />
+
+    <TextView
+        android:textColor="@color/Black"
+        android:textSize="15sp"
+        android:padding="5dp"
+        android:id="@+id/txt6"
+        android:layout_below="@id/ratings"
+        android:background="#ffffff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text = "Comments:"
+       />
+
+<EditText
+    android:textColor="@color/Black"
+    android:textSize="12sp"
+    android:layout_below="@id/txt6"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/et1"
+    android:inputType="textMultiLine"
+    android:minLines="2"
+    android:maxLines="3"
+   />
+
+</RelativeLayout>
+
+
+
+
+    <Button
+        android:id="@+id/btn_submit"
+        android:background="@color/colorAccent"
+        android:layout_marginTop="5dp"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rl3"
+        android:text="Submit"/>
+
+</RelativeLayout>
