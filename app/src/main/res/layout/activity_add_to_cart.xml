@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/Platinum"
+    android:orientation="vertical"
    >
 
 
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
         android:background="@color/White">
 
         <TextView
@@ -29,7 +31,7 @@
             />
 
         <TextView
-            android:id="@+id/txt_rupee"
+            android:id="@+id/txt_total"
             android:paddingTop="5dp"
             android:paddingLeft="5dp"
             android:layout_toRightOf="@+id/rupee"
@@ -37,17 +39,17 @@
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:textSize="20sp"
-            android:text="450"/>
+            android:text="0"/>
 
         <TextView
             android:paddingTop="5dp"
-            android:paddingLeft="5dp"
+
             android:layout_below="@+id/rupee"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
             android:textSize="15sp"
-            android:text="450"/>
+            android:text="View Price Details"
+            android:textColor="@color/holo_blue_dark"/>
 
         <TextView
             android:id="@+id/pay"
@@ -65,4 +67,4 @@
 
 
 
-</RelativeLayout>
+</LinearLayout>

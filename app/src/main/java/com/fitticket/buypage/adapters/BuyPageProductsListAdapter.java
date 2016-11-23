@@ -3,19 +3,35 @@ package com.fitticket.buypage.adapters;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.fitticket.R;
+import com.fitticket.buypage.pojos.AddtoCartJsonResponse;
 import com.fitticket.buypage.pojos.GetProductByCategoryResponse;
+import com.fitticket.model.constants.Apis;
 import com.fitticket.model.pojos.CategoryJson;
+import com.fitticket.model.pojos.RateActivityJson;
 import com.fitticket.model.singleton.MySingleton;
+import com.fitticket.model.singleton.PreferencesManager;
+import com.fitticket.model.utils.WebServices;
+import com.fitticket.viewmodel.fragments.UserRatingFragment;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -27,19 +43,28 @@ import java.util.ArrayList;
 public class BuyPageProductsListAdapter extends RecyclerView.Adapter<BuyPageProductsListAdapter.ViewHolder> {
     Context mContext;
     private ArrayList<GetProductByCategoryResponse.Products> mCategoryList;
-    SharedPreferences mPrefs;
+    PreferencesManager sPref;
     ProductSelectedListener listener;
+    AddtoCartListener cart_listener;
+    private static final String TAG = BuyPageProductsListAdapter.class.getSimpleName();
+
 
     public interface ProductSelectedListener {
         void onProductSelected(int activityId);
     }
 
+    public interface AddtoCartListener {
+       // void onAddToCartSelected(AddtoCartJsonResponse json);
+        void onAddToCartSelected(String productid, String priceid , String customer_id , String price ,String qty , String status , String orderid, String from_which_context);
+    }
+
 
     public BuyPageProductsListAdapter(Context context, ArrayList<GetProductByCategoryResponse.Products> categoryList) {
         listener = (ProductSelectedListener) context;
+        cart_listener = (AddtoCartListener) context;
         mCategoryList = categoryList;
         mContext = context;
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        sPref=PreferencesManager.getInstance(context);
     }
 
     @Override
@@ -90,6 +115,33 @@ public class BuyPageProductsListAdapter extends RecyclerView.Adapter<BuyPageProd
                 holder.txt_rupee.setText(String.valueOf(Double.parseDouble( mCategoryList.get(position).getUnitPrice())*b));
             }
         });
+        holder.btn_addtocart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String a,b,c,d,e,f,g,from_which_context;
+
+
+
+                a=String.valueOf(mCategoryList.get(position).getId());
+                b=String.valueOf(mCategoryList.get(position).getUnitId());
+                c=String.valueOf(sPref.getUserId());
+                d=holder.txt_rupee.getText().toString();
+                e=holder.item_count.getText().toString();
+                f="1";
+                g="0";
+                from_which_context="1";
+
+                Log.w(TAG, "productid "+String.valueOf(mCategoryList.get(position).getId()));
+                Log.w(TAG, "pricing is "+ String.valueOf(mCategoryList.get(position).getUnitId()));
+                Log.w(TAG,"customerid is "+String.valueOf(sPref.getUserId()));
+                Log.w(TAG,"pricing  is "+holder.txt_rupee.getText().toString());
+                Log.w(TAG,"quantity is "+holder.item_count.getText().toString());
+
+              cart_listener.onAddToCartSelected(a,b,c,d,e,f,g,from_which_context);
+
+
+    }
+});
     }
 
     @Override
@@ -105,8 +157,9 @@ public class BuyPageProductsListAdapter extends RecyclerView.Adapter<BuyPageProd
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         NetworkImageView gymLogoImgView;
-        TextView activityNameTxtView,gymNameTxtView,txt_rupee,item_increment,item_decrement,item_count;
+        TextView activityNameTxtView,gymNameTxtView,txt_rupee,item_increment,item_decrement,item_count,btn_addtocart;
         public final LinearLayout gymClickLayout;
+
 
 
         public ViewHolder(View view) {
@@ -119,8 +172,15 @@ public class BuyPageProductsListAdapter extends RecyclerView.Adapter<BuyPageProd
             item_increment = (TextView) view.findViewById(R.id.item_increment);
             item_decrement = (TextView) view.findViewById(R.id.item_decrement);
             item_count = (TextView) view.findViewById(R.id.item_count);
+            btn_addtocart = (TextView) view.findViewById(R.id.btn_addtocart);
+
         }
     }
+
+
+
+
+
 
 
 }

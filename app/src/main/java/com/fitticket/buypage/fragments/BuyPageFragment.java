@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -36,6 +37,7 @@ import com.fitticket.model.services.FetchAllGymsService;
 import com.fitticket.model.singleton.MySingleton;
 import com.fitticket.model.singleton.PreferencesManager;
 import com.fitticket.model.utils.WebServices;
+import com.fitticket.viewmodel.activities.MainActivity;
 import com.fitticket.viewmodel.custom.ProgressBarCircular;
 import com.fitticket.viewmodel.utils.Utilities;
 import com.google.gson.Gson;
@@ -65,7 +67,7 @@ public class BuyPageFragment extends Fragment {
     private RecyclerView.Adapter mBuyPageAdater;
     private RecyclerView.LayoutManager mLayoutManager;
     private AppCompatActivity parentActivity;
-
+    ImageView icon_cart;
 
     private ArrayList<BuyPageCategoryJsonResponse.BuyPageCategoryJson> mCategoryList;
 
@@ -96,6 +98,8 @@ public class BuyPageFragment extends Fragment {
         if (getArguments() != null) {
             //TODO
         }
+
+        ((MainActivity) getActivity()).getSupportActionBar().setCustomView(R.layout.custom_actionbar_fragment_buypage);
     }
 
     @Override
@@ -105,7 +109,6 @@ public class BuyPageFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_buy_page, container, false);
         mCatRecyclerView = (RecyclerView) view.findViewById(R.id.category_recycler_view);
         progressBar = (ProgressBarCircular) view.findViewById(R.id.progressBar);
-
 
 
         mCatRecyclerView.setHasFixedSize(true);
@@ -137,7 +140,7 @@ public class BuyPageFragment extends Fragment {
 
     }
 
-    @Override
+ /*   @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.menu_addtocart, menu);
@@ -157,7 +160,7 @@ public class BuyPageFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     private void triggerCategoryVolleyRequest() {
         progressBar.setVisibility(View.VISIBLE);

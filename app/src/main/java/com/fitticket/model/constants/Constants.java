@@ -25,4 +25,6 @@ public class Constants {
 
     public static final int NEARBY_DISTANCE = 5;
     public static final long VERY_LONG_DISTANCE = 100000;
+
+
 }

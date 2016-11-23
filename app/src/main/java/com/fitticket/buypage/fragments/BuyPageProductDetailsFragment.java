@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -24,14 +23,18 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.fitticket.R;
 import com.fitticket.buypage.activities.AddToCartActivity;
 import com.fitticket.buypage.activities.BuyPageProductDetailsActivity;
-import com.fitticket.buypage.pojos.GetProductByCategoryResponse;
+import com.fitticket.buypage.pojos.AddtoCartJsonResponse;
 import com.fitticket.buypage.pojos.GetProductDescriptionResponse;
-import com.fitticket.model.constants.Apis;
 import com.fitticket.model.singleton.MySingleton;
+import com.fitticket.model.singleton.PreferencesManager;
 import com.fitticket.model.utils.WebServices;
 import com.fitticket.viewmodel.utils.Utilities;
 import com.google.gson.Gson;
 
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -46,6 +49,11 @@ public class BuyPageProductDetailsFragment extends Fragment {
     private static final String TAG = BuyPageProductDetailsFragment.class.getSimpleName();
     private int mActivityId;
     private static String URL = "http://192.168.168.234:86/WebServices/v1/AppService.svc/GetBuyPageProductDescriptionBy?ProductId=1";
+    private static final String URL_ADD_TO_CART = "http://192.168.168.234:86/WebServices/v1/AppService.svc/BuyPageAddtoCart";
+
+    PreferencesManager sPref;
+
+
 // region findviewbyid
     @Bind(R.id.btn_addtocart) Button btn_addtocart;
     @Bind(R.id.btn_buy_now) Button btn_buynow;
@@ -61,8 +69,10 @@ public class BuyPageProductDetailsFragment extends Fragment {
     @Bind(R.id.txt_product_overView) TextView txt_product_overView;
     @Bind(R.id.txt_default_qty) TextView txt_default_qty;
     @Bind(R.id.imgBanner) NetworkImageView imgBanner;
+    @Bind(R.id.rupee_value) TextView rupee_value;
 
     static int price_pos=0;
+    static int priceid,price;
     ImageLoader imageLoader;
 
     //endregion
@@ -71,6 +81,8 @@ public class BuyPageProductDetailsFragment extends Fragment {
     ArrayList<GetProductDescriptionResponse.ProductPricing> mPricingList;
     ArrayList<String> mImageList;
     GetProductDescriptionResponse jsonResponse;
+
+    String CartId,Quantity,Price,ProductImage,ProductName,ShortDescription,UnitPrice,from_which_context;
 
 
     public static BuyPageProductDetailsFragment newInstance(int activityId) {
@@ -88,6 +100,7 @@ public class BuyPageProductDetailsFragment extends Fragment {
             mActivityId = getArguments().getInt(BuyPageProductDetailsActivity.ACTIVITY_ID);
         }
 
+        sPref = PreferencesManager.getInstance(getActivity());
         mCategoryList = new ArrayList<>();
         mPricingList = new ArrayList<>();
         list = new ArrayList<>();
@@ -116,17 +129,49 @@ public class BuyPageProductDetailsFragment extends Fragment {
         btn_addtocart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AddToCartActivity.class);
-                intent.putExtra(AddToCartActivity.FROM_CART_OR_BUYNOW,"1");
-                startActivity(intent);
+
+
+                String a,b,c,d,e,f,g;
+                a=String.valueOf(jsonResponse.getGetBuyPageProductDescriptionByIdResult().getProductId());
+                b=String.valueOf(priceid);
+                c=String.valueOf(sPref.getUserId());
+                d=String.valueOf(price);
+                e=item_count.getText().toString();
+                f="1";
+                g="0";
+                from_which_context="2";
+
+                onAddToCartSelected(a,b,c,d,e,f,g,from_which_context);
+
+            // addToCart(json);
             }
         });
         btn_buynow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AddToCartActivity.class);
-                intent.putExtra(AddToCartActivity.FROM_CART_OR_BUYNOW,"2");
-                startActivity(intent);
+               /* AddtoCartJsonResponse json = new AddtoCartJsonResponse();
+                json.setProductId(String.valueOf(jsonResponse.getGetBuyPageProductDescriptionByIdResult().getProductId()));
+                Log.w(TAG,"pric id is " + priceid);
+                json.setPricingId(String.valueOf(priceid));
+                json.setCustomerId(String.valueOf(sPref.getUserId()));
+                Log.w(TAG,"pric id is " + price);
+                json.setPrice(String.valueOf(price));
+                json.setQuantity(item_count.getText().toString());
+                json.setStatus("1");
+                json.setOrderID("0");*/
+             //   buyNow(json);
+
+
+                String a,b,c,d,e,f,g;
+                a=String.valueOf(jsonResponse.getGetBuyPageProductDescriptionByIdResult().getProductId());
+                b=String.valueOf(priceid);
+                c=String.valueOf(sPref.getUserId());
+                d=String.valueOf(price);
+                e=item_count.getText().toString();
+                f="1";
+                g="0";
+                from_which_context="2";
+                onBuyNowSelected(a,b,c,d,e,f,g,from_which_context);
             }
         });
 
@@ -161,7 +206,9 @@ public class BuyPageProductDetailsFragment extends Fragment {
         txt_product_overView.setText(jsonResponse.getGetBuyPageProductDescriptionByIdResult().getProductOverView());
         imgBanner.setImageUrl(mImageList.get(0), imageLoader);
         imgBanner.setDefaultImageResId(R.drawable.ic_launcher);
+        if(mPricingList.size()!=0)
         addqty();
+        if(mImageList.size()!=0)
         addimages(mImageList.size());
 
 
@@ -182,7 +229,10 @@ public class BuyPageProductDetailsFragment extends Fragment {
            txt_qty.setText(mPricingList.get(i).getUnitName());
            txt_qty.setTag(i);
            if(price_pos==i)
-           {txt_qty.setBackgroundResource(R.color.GrayCloud);}
+           {txt_qty.setBackgroundResource(R.color.GrayCloud);
+               priceid = mPricingList.get(i).getProductPricingID();
+               price = mPricingList.get(i).getPrice();
+           }
            else
                txt_qty.setBackgroundResource(R.color.Platinum);
 
@@ -191,13 +241,11 @@ public class BuyPageProductDetailsFragment extends Fragment {
                public void onClick(View v) {
                    txt_default_qty.setText("(" + txt_qty.getText().toString() + ")");
                    price_pos= (int)v.getTag();
+                   priceid = mPricingList.get(price_pos).getProductPricingID();
+                   price = mPricingList.get(price_pos).getPrice();
+                   rupee_value.setText(String.valueOf(price));
                    qty_layout.removeAllViews();
                    addqty();
-                 /*  int pos = (Integer)v.getTag();
-                   selectedpos = pos;
-                   Toast.makeText(getActivity(),pos + " position ", Toast.LENGTH_SHORT).show();
-                   txt_qty.setBackgroundResource(R.color.GrayCloud);
-                 */
 
                }
            });
@@ -230,13 +278,15 @@ public class BuyPageProductDetailsFragment extends Fragment {
                 public void onClick(View v) {
                     int pos = (int)v.getTag();
                     imgBanner.setImageUrl(mImageList.get(pos), imageLoader);
-                 //   Log.w(TAG,mImageList.get(pos));
+
                 }
             });
             images_layout.addView(l1);
         }
     }
 //endregion
+
+    //region getproductdetails service
     private void triggerProductDetailsVolleyRequest(int catId) {
         progressBar.setVisibility(View.VISIBLE);
         Log.w(TAG, "Get categories Requst: " + URL );
@@ -266,5 +316,68 @@ public class BuyPageProductDetailsFragment extends Fragment {
 
 
     }
+  //endregion
+
+
+
+  //region addToCart service
+    public void onAddToCartSelected(String productid, String priceid , String customer_id , String price ,String qty , String status , String orderid,String from_which_context){
+        Log.w(TAG, "show popup");
+     /*   CartLogicFragment activitiesFragment = new CartLogicFragment();
+        replaceFragment(activitiesFragment, "abc", false);*/
+
+        android.support.v4.app.FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        Fragment prev = getActivity().getSupportFragmentManager().findFragmentByTag("dialog1");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+        // Create and show the dialog.
+
+        CartLogicFragment newFragment = new CartLogicFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("productid", productid);
+        bundle.putString("priceid", priceid);
+        bundle.putString("customer_id", customer_id);
+        bundle.putString("price", price);
+        bundle.putString("qty", qty);
+        bundle.putString("status", status);
+        bundle.putString("orderid", orderid);
+        bundle.putString("from_which_context",from_which_context);
+        newFragment.setArguments(bundle);
+        newFragment.show(ft, "dialog1");
+    }
+//endregion
+
+
+    //region buynowfromCart service
+    public void onBuyNowSelected(String productid, String priceid , String customer_id , String price ,String qty , String status , String orderid,String from_which_context){
+        Log.w(TAG, "show popup");
+
+
+        android.support.v4.app.FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        Fragment prev = getActivity().getSupportFragmentManager().findFragmentByTag("dialog1");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+        // Create and show the dialog.
+
+        BuyNowLogicFragment newFragment = new BuyNowLogicFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("productid", productid);
+        bundle.putString("priceid", priceid);
+        bundle.putString("customer_id", customer_id);
+        bundle.putString("price", price);
+        bundle.putString("qty", qty);
+        bundle.putString("status", status);
+        bundle.putString("orderid", orderid);
+        bundle.putString("from_which_context",from_which_context);
+        newFragment.setArguments(bundle);
+        newFragment.show(ft, "dialog1");
+    }
+//endregion
+
+
 
 }

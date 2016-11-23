@@ -266,14 +266,17 @@
 
         <activity
             android:name=".buypage.activities.BuyPageProductDetailsActivity"
-            android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar" />
+            android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar"
+            android:screenOrientation="portrait"/>
 
         <activity android:name=".buypage.activities.CartMenuActivity"
             android:launchMode="singleInstance"
+            android:screenOrientation="portrait"
             />
 
         <activity android:name=".buypage.activities.AddToCartActivity"
-            android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar"></activity>
+            android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

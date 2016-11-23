@@ -16,7 +16,10 @@ import android.widget.RelativeLayout;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.fitticket.R;
+import com.fitticket.buypage.activities.AddToCartActivity;
 import com.fitticket.buypage.adapters.AddToCartAdapter;
+import com.fitticket.buypage.others.BuyPageSingleton;
+import com.fitticket.buypage.pojos.AddToCartListJsonResponse;
 import com.fitticket.model.constants.Apis;
 import com.fitticket.model.pojos.CategoryJson;
 import com.fitticket.model.pojos.CategoryJsonResponse;
@@ -35,18 +38,20 @@ import butterknife.ButterKnife;
  */
 public class AddToCartFragment extends Fragment {
 
-    private static final String GET_URL = "GET_URL";
-    private static final String FROM_FLAG = "FROM_FLAG";
-    private String mUrl,catId,latitude,longitude;
-    private static final String LATITUDE = "LATITUDE";
-    private static final String LONGITUDE = "LONGITUDE";
-    private static final String CAT_ID = "CAT_ID";
+    private static final String GET_URL = "http://192.168.168.234:86/WebServices/v1/AppService.svc/ListOfCartProduct?CustomerId=";
+
     private  static final String TAG = AddToCartFragment.class.getSimpleName();
+    PreferencesManager sPref;
+    int userid;
+    double total=0.0;
+    double price=0;
+    int qty=0;
+
 
     // region temporary values
     private AppCompatActivity parentActivity;
     AddToCartAdapter mBuyPageProductsAdater;
-    private ArrayList<CategoryJson> mCategoryList;
+    private ArrayList<AddToCartListJsonResponse.CartProducts> mCategoryList;
 
     //endregion
 
@@ -84,31 +89,37 @@ public class AddToCartFragment extends Fragment {
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(parentActivity);
         mActivityListView.setLayoutManager(mLayoutManager);
+        sPref = PreferencesManager.getInstance(getActivity());
+        userid = sPref.getUserId();
         mCategoryList = new ArrayList<>();
         triggerCategoryVolleyRequest();
     }
 
     private void triggerCategoryVolleyRequest() {
         progressBar.setVisibility(View.VISIBLE);
-        String cityId = PreferencesManager.getInstance(parentActivity).getSelectedCityId();
-        Log.w(TAG, "Get categories Requst: " + Apis.GET_CATEGORIES_GROUP_URL + cityId);
-        WebServices.triggerVolleyGetRequest(parentActivity, Apis.GET_CATEGORIES_GROUP_URL + cityId,
+        Log.w(TAG, "Get categories Requst: " + GET_URL + userid);
+        WebServices.triggerVolleyGetRequest(parentActivity, GET_URL + userid,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.w(TAG, "Get categories response: " + response);
                         Gson gson = new Gson();
-                        CategoryJsonResponse jsonResponse = gson.fromJson(response, CategoryJsonResponse.class);
-                        mCategoryList=jsonResponse.getData().getCategories();
-                        if (jsonResponse.getStatusCode().equalsIgnoreCase("0")) {
-                            if (jsonResponse.getData() != null && jsonResponse.getData().getCategories() != null
-                                    && !jsonResponse.getData().getCategories().isEmpty()) {
-                                setBuyPageAdater();
+                        AddToCartListJsonResponse jsonResponse = gson.fromJson(response, AddToCartListJsonResponse.class);
+                        mCategoryList=jsonResponse.getListOfCartProductResult().getCartProducts();
+                        Log.w(TAG,jsonResponse.getListOfCartProductResult().getStatusCode()+"CODE and count is " +jsonResponse.getListOfCartProductResult().getCount());
+                        if (jsonResponse.getListOfCartProductResult().getStatusCode()==1) {
+
+                            for(int i=0;i<jsonResponse.getListOfCartProductResult().getCount();i++)
+                            {
+                                total+=Double.parseDouble(mCategoryList.get(i).getUnitPrice())*mCategoryList.get(i).getQuantity();
                             }
 
-                        } else {
-                            Log.w(TAG, jsonResponse.getStatusMsg());
-                            setBuyPageAdater();
+                                setBuyPageAdater(jsonResponse.getListOfCartProductResult().getCount());
+
+                            }
+                        else {
+                            Log.w(TAG, "Cart is empty");
+                          //  setBuyPageAdater();
                         }
                         progressBar.setVisibility(View.GONE);
                     }
@@ -123,7 +134,9 @@ public class AddToCartFragment extends Fragment {
 
     }
 
-    private void setBuyPageAdater() {
+    private void setBuyPageAdater(int cart_count_title) {
+
+       ((AddToCartActivity) getActivity()).setBarTitle(String.valueOf(cart_count_title) ,"My Cart ("+ BuyPageSingleton.CART_COUNT+")",String.valueOf(total));
         mBuyPageProductsAdater = new AddToCartAdapter(parentActivity, mCategoryList);
         mActivityListView.setAdapter(mBuyPageProductsAdater);
     }
