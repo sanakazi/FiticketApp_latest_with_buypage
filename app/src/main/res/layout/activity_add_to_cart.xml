@@ -59,6 +59,7 @@
             android:textSize="15sp"
             android:layout_alignParentRight="true"
             android:background="@drawable/continue_btn"
+            
             />
 
     </RelativeLayout>
